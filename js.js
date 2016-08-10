@@ -1,34 +1,56 @@
-// var btn = document.getElementById('translate');
-var request = new XMLHttpRequest();
+$(document).ready(function() {
 
-$(function() {
-  var $txtArea = $('#textArea'),
-      $result = $('#result'),
-      $translate = $('#translate');
+    console.log("ready!");
 
-  $translate.on('click', function(e) {
+    var $btn = $('#request');
+    var $bio = $('#bio');
+    var $textInput = $("#myText");
+    var $loader = $('.loader');
+    $loader.hide();
 
-    e.preventDefault();
-    console.log('clicked');
+    $btn.on('click', function(e) {
 
-    $.ajax({
-      url: "https://yoda.p.mashape.com/yoda?sentence=You+will+learn+how+to+speak+like+me+someday.++Oh+wait.",
-      type: 'GET',
-      data: {
-        sentence: $txtArea.val()
-      },
-      // dataType: 'json',
-      beforeSend: function(xhr) {
-                    xhr.setRequestHeader(
-                    // 'X-Mashape-Key: 5YLQrzUFnSmshxGAypr5wO73X8Uzp1BoNthjsnXFYT8XutFo0x');
-                    'X-Mashape-Key: 6uSYHYGrrAmsh0BYvusfxuuxH6PJp1ERGeYjsncRuEznHbrgvE');
-                  }
+        // prevent the default behavior of the link
+        e.preventDefault();
+        console.log('click'); //Display if clicked
 
-    }).done(function(data) {
-        $result.text(data);
-      })
-      .fail(function(request, textStatus, errorThrown) {
-        $result.html('Error:' + request.status + '' + textStatus + '' + errorThrown);
-      });
-  });
+        // execute the AJAX request
+        $.ajax({
+                // where the data live
+                url: 'https://yoda.p.mashape.com/yoda?sentence=',
+                type: 'GET',
+                data: {
+                    sentence: $textInput.val()
+                },
+                // what is their type
+                dataType: 'html',
+                // show the loader before making the request
+                beforeSend: function(xhr) {
+                    $loader.show();
+                    xhr.setRequestHeader('X-Mashape-Key', '6uSYHYGrrAmsh0BYvusfxuuxH6PJp1ERGeYjsncRuEznHbrgvE');
+                },
+            }).done(successFunction)
+            .fail(failFunction);
+        //.always(alwaysFunction);
+    });
+
+    function successFunction(data) {
+        // hide the loader and show the modal
+        // $btn.hide();
+        console.log('in successFunction');
+        console.log(data);
+
+        // $bio.style.border = '1px solid #e8e8e8';
+        $bio.css('border','1px solid grey');
+
+        $loader.hide();
+        $bio.html('Yoda will say: ' + data);
+
+    }
+
+    function failFunction(request, textStatus, errorThrown) {
+        // hide the list and show the corresponding message
+        $bio.html('An error occurred during your request: ' + request.status + ' ' + textStatus + ' ' + errorThrown);
+    }
+
 });
